@@ -1,0 +1,678 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#12304a">
+<title>HAMDAD SHOP | إدارة المحلات</title>
+<style>
+:root{--navy:#12304a;--blue:#1769aa;--gold:#e5b653;--bg:#f3f6fa;--white:#fff;--text:#243447;--muted:#6b7a8c;--red:#c0392b;--green:#198754;--border:#e2e8f0}
+*{box-sizing:border-box}
+body{margin:0;font-family:Tahoma,Arial,sans-serif;background:var(--bg);color:var(--text)}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer;border:0;border-radius:8px;padding:10px 14px;background:var(--blue);color:white}
+button:hover{filter:brightness(.95)}
+button:disabled{opacity:.5;cursor:not-allowed}
+input,select,textarea{width:100%;padding:11px;border:1px solid var(--border);border-radius:8px;background:white;min-width:0}
+label{display:block;font-size:13px;margin-bottom:6px;color:var(--muted)}
+h1,h2,h3,p{margin-top:0}
+h2{font-size:21px}
+.small{font-size:12px;color:var(--muted)}
+.muted{color:var(--muted)}
+.hidden{display:none!important}
+#auth{max-width:430px;margin:7vh auto;padding:25px;background:white;border-radius:18px;box-shadow:0 10px 35px #102f4914}
+.brand{text-align:center;color:var(--navy);font-weight:bold;font-size:27px;letter-spacing:1px}
+.brand span{color:var(--gold)}
+#auth form{display:grid;gap:14px;margin-top:24px}
+#app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+aside{background:var(--navy);color:white;padding:22px 15px}
+.logo{font-size:21px;font-weight:bold;margin:5px 8px 30px}
+.logo span{color:var(--gold)}
+nav{display:grid;gap:7px}
+nav button{background:transparent;text-align:right;color:#e7eff7;border-radius:8px}
+nav button.active,nav button:hover{background:#ffffff19}
+nav button span{margin-left:9px}
+main{padding:25px;min-width:0}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:24px;flex-wrap:wrap}
+.topbar h1{font-size:24px;margin:0}
+.panel{background:white;border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:20px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:20px}
+.stat{background:white;padding:19px;border-radius:13px;border:1px solid var(--border)}
+.stat .label{font-size:13px;color:var(--muted)}
+.stat strong{display:block;font-size:24px;margin-top:10px;overflow-wrap:anywhere}
+.stat:nth-child(2){border-top:3px solid var(--blue)}
+.stat:nth-child(3){border-top:3px solid var(--green)}
+.stat:nth-child(4){border-top:3px solid var(--gold)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.formgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.field{min-width:0}
+.field.full{grid-column:1/-1}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.secondary{background:#e9eff5;color:var(--navy)}
+.danger{background:var(--red)}
+.success{background:var(--green)}
+table{border-collapse:collapse;width:100%;min-width:650px}
+th,td{text-align:right;padding:12px 10px;border-bottom:1px solid var(--border);font-size:13px}
+th{background:#f7f9fc;color:var(--muted)}
+.tablewrap{overflow:auto}
+.badge{display:inline-block;border-radius:20px;background:#edf4fb;color:var(--blue);padding:4px 9px;font-size:12px}
+.empty{text-align:center;padding:25px;color:var(--muted)}
+.notice{padding:12px;border-radius:9px;background:#fff5db;color:#76571b;font-size:13px;line-height:1.8;margin-bottom:15px}
+#toast{position:fixed;bottom:20px;left:20px;z-index:100;background:#172b3c;color:white;padding:13px 18px;border-radius:10px;max-width:90%;display:none}
+#toast.show{display:block}
+.page{display:none}.page.active{display:block}
+hr{border:0;border-top:1px solid var(--border);margin:18px 0}
+@media(max-width:950px){#app{grid-template-columns:1fr}aside{padding:12px} .logo{margin:8px 5px 12px}nav{display:flex;overflow:auto}nav button{white-space:nowrap}main{padding:15px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.formgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.grid,.formgrid{grid-template-columns:1fr}.field.full{grid-column:auto}.stat strong{font-size:20px}.topbar h1{font-size:20px}}
+@media print{aside,.topbar,.no-print,.actions{display:none!important}#app{display:block}main{padding:0}.panel{border:0}.page{display:none!important}#page-sales{display:block!important}}
+</style>
+</head>
+<body>
+
+<section id="auth">
+  <div class="brand">HAMDAD <span>SHOP</span></div>
+  <p class="muted" style="text-align:center;margin-top:10px">نظام إدارة المحلات والمخزون</p>
+  <div class="notice">سجّل الدخول أو أنشئ حسابًا جديدًا. بيانات كل حساب محفوظة في قاعدة بياناته الخاصة.</div>
+  <form id="authForm">
+    <div><label for="email">البريد الإلكتروني</label><input id="email" type="email" required autocomplete="email"></div>
+    <div><label for="password">كلمة المرور</label><input id="password" type="password" required minlength="6" autocomplete="current-password"></div>
+    <button id="loginBtn" type="submit">تسجيل الدخول</button>
+    <button id="registerBtn" type="button" class="secondary">إنشاء حساب جديد</button>
+    <p id="authMsg" class="small"></p>
+  </form>
+</section>
+
+<div id="app" class="hidden">
+  <aside class="no-print">
+    <div class="logo">HAMDAD <span>SHOP</span></div>
+    <nav id="nav">
+      <button class="active" data-page="dashboard"><span>▦</span>لوحة التحكم</button>
+      <button data-page="products"><span>▤</span>المنتجات والمخزون</button>
+      <button data-page="sales"><span>🛒</span>المبيعات والفواتير</button>
+      <button data-page="purchases"><span>📦</span>المشتريات</button>
+      <button data-page="expenses"><span>↗</span>المصاريف</button>
+      <button data-page="reports"><span>▥</span>التقارير</button>
+      <button data-page="settings"><span>⚙</span>الإعدادات</button>
+    </nav>
+    <hr>
+    <button id="logoutBtn" class="secondary" style="width:100%">تسجيل الخروج</button>
+  </aside>
+
+  <main>
+    <div class="topbar no-print">
+      <h1 id="pageTitle">لوحة التحكم</h1>
+      <span id="syncStatus" class="badge">جارٍ التحقق من الاتصال...</span>
+    </div>
+
+    <section id="page-dashboard" class="page active">
+      <div class="stats">
+        <div class="stat"><div class="label">عدد المنتجات</div><strong id="statProducts">0</strong></div>
+        <div class="stat"><div class="label">قيمة المخزون بسعر الشراء</div><strong id="statStock">0</strong></div>
+        <div class="stat"><div class="label">مبيعات اليوم</div><strong id="statSales">0</strong></div>
+        <div class="stat"><div class="label">المنتجات منخفضة المخزون</div><strong id="statLow">0</strong></div>
+      </div>
+      <div class="panel">
+        <h2>مرحبًا بك في HAMDAD SHOP</h2>
+        <p class="muted">نظّم منتجاتك ومبيعاتك ومشترياتك من مكان واحد.</p>
+        <div class="actions no-print">
+          <button onclick="showPage('products')">إدارة المنتجات</button>
+          <button onclick="showPage('sales')" class="success">تسجيل عملية بيع</button>
+          <button onclick="showPage('reports')" class="secondary">عرض التقارير</button>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>آخر المبيعات</h2>
+        <div id="recentSales" class="tablewrap"></div>
+      </div>
+    </section>
+
+    <section id="page-products" class="page">
+      <div class="panel">
+        <h2 id="productFormTitle">إضافة منتج جديد</h2>
+        <form id="productForm">
+          <input type="hidden" id="productId">
+          <div class="formgrid">
+            <div class="field"><label>اسم المنتج *</label><input id="pName" required></div>
+            <div class="field"><label>رمز المنتج / SKU</label><input id="pSku"></div>
+            <div class="field"><label>التصنيف</label><input id="pCategory"></div>
+            <div class="field"><label>سعر الشراء</label><input id="pCost" type="number" min="0" step="0.01" value="0" required></div>
+            <div class="field"><label>سعر البيع</label><input id="pPrice" type="number" min="0" step="0.01" value="0" required></div>
+            <div class="field"><label>الكمية الحالية</label><input id="pQty" type="number" min="0" step="1" value="0" required></div>
+            <div class="field"><label>حد التنبيه</label><input id="pMin" type="number" min="0" step="1" value="5" required></div>
+          </div>
+          <div class="actions">
+            <button type="submit">حفظ المنتج</button>
+            <button type="button" id="cancelProduct" class="secondary">إلغاء التعديل</button>
+          </div>
+        </form>
+      </div>
+      <div class="panel">
+        <div class="topbar"><h2>قائمة المنتجات</h2><input id="productSearch" placeholder="ابحث عن منتج..." style="max-width:280px"></div>
+        <div id="productsTable" class="tablewrap"></div>
+      </div>
+    </section>
+
+    <section id="page-sales" class="page">
+      <div class="panel no-print">
+        <h2>تسجيل عملية بيع</h2>
+        <form id="saleForm">
+          <div class="formgrid">
+            <div class="field"><label>المنتج *</label><select id="saleProduct" required></select></div>
+            <div class="field"><label>الكمية *</label><input id="saleQty" type="number" min="1" step="1" value="1" required></div>
+            <div class="field"><label>اسم العميل (اختياري)</label><input id="saleCustomer"></div>
+          </div>
+          <div class="actions"><button type="submit" class="success">تأكيد البيع</button></div>
+        </form>
+      </div>
+      <div class="panel">
+        <h2>سجل المبيعات والفواتير</h2>
+        <div id="salesTable" class="tablewrap"></div>
+      </div>
+    </section>
+
+    <section id="page-purchases" class="page">
+      <div class="panel no-print">
+        <h2>تسجيل شراء بضاعة</h2>
+        <form id="purchaseForm">
+          <div class="formgrid">
+            <div class="field"><label>المنتج *</label><select id="purchaseProduct" required></select></div>
+            <div class="field"><label>الكمية *</label><input id="purchaseQty" type="number" min="1" step="1" value="1" required></div>
+            <div class="field"><label>سعر شراء الوحدة *</label><input id="purchaseCost" type="number" min="0" step="0.01" required></div>
+            <div class="field"><label>المورّد</label><input id="purchaseSupplier"></div>
+          </div>
+          <div class="actions"><button type="submit">تأكيد الشراء وإضافة المخزون</button></div>
+        </form>
+      </div>
+      <div class="panel"><h2>سجل المشتريات</h2><div id="purchasesTable" class="tablewrap"></div></div>
+    </section>
+
+    <section id="page-expenses" class="page">
+      <div class="panel no-print">
+        <h2>تسجيل مصروف</h2>
+        <form id="expenseForm">
+          <div class="formgrid">
+            <div class="field"><label>نوع المصروف *</label><input id="expenseTitle" required placeholder="كراء، كهرباء، نقل..."></div>
+            <div class="field"><label>المبلغ *</label><input id="expenseAmount" type="number" min="0.01" step="0.01" required></div>
+            <div class="field"><label>ملاحظات</label><input id="expenseNote"></div>
+          </div>
+          <div class="actions"><button type="submit">حفظ المصروف</button></div>
+        </form>
+      </div>
+      <div class="panel"><h2>سجل المصاريف</h2><div id="expensesTable" class="tablewrap"></div></div>
+    </section>
+
+    <section id="page-reports" class="page">
+      <div class="panel">
+        <h2>التقارير المالية</h2>
+        <p class="muted">الحسابات التالية تقديرية وتعتمد على البيانات المسجلة في التطبيق.</p>
+        <div class="stats">
+          <div class="stat"><div class="label">إجمالي المبيعات</div><strong id="reportRevenue">0</strong></div>
+          <div class="stat"><div class="label">تكلفة البضاعة المباعة</div><strong id="reportCost">0</strong></div>
+          <div class="stat"><div class="label">الربح الإجمالي التقديري</div><strong id="reportGross">0</strong></div>
+          <div class="stat"><div class="label">المصاريف المسجلة</div><strong id="reportExpenses">0</strong></div>
+        </div>
+        <h3 id="reportNet">النتيجة بعد المصاريف: 0</h3>
+        <p class="small">لا يشمل هذا التقرير الضرائب أو الديون أو التلف أو أي تكاليف غير مسجلة. قيمة المخزون لا تُعد ربحًا.</p>
+        <div class="actions no-print">
+          <button onclick="window.print()">طباعة التقرير</button>
+          <button class="secondary" onclick="exportCSV()">تصدير المنتجات CSV</button>
+          <button class="secondary" onclick="exportBackup()">نسخة احتياطية JSON</button>
+          <label style="display:inline-block;padding:10px;background:#e9eff5;border-radius:8px;cursor:pointer;color:#12304a">استعادة نسخة <input id="importFile" type="file" accept=".json,application/json" style="display:none"></label>
+        </div>
+      </div>
+    </section>
+
+    <section id="page-settings" class="page">
+      <div class="panel">
+        <h2>إعدادات المحل</h2>
+        <form id="settingsForm">
+          <div class="formgrid">
+            <div class="field"><label>اسم المحل</label><input id="shopName" value="HAMDAD SHOP" required></div>
+            <div class="field"><label>اسم صاحب المحل</label><input id="ownerName"></div>
+            <div class="field"><label>العملة</label><select id="currency"><option value="DZD">الدينار الجزائري DZD</option><option value="SAR">الريال السعودي SAR</option><option value="AED">الدرهم الإماراتي AED</option><option value="QAR">الريال القطري QAR</option><option value="KWD">الدينار الكويتي KWD</option><option value="OMR">الريال العماني OMR</option><option value="BHD">الدينار البحريني BHD</option></select></div>
+          </div>
+          <div class="actions"><button type="submit">حفظ الإعدادات</button></div>
+        </form>
+      </div>
+      <div class="panel">
+        <h2>البيانات والحساب</h2>
+        <p class="muted">البيانات السحابية مرتبطة بحسابك. سجّل الخروج عند استخدام جهاز مشترك.</p>
+        <button id="settingsLogout" class="danger">تسجيل الخروج</button>
+      </div>
+    </section>
+  </main>
+</div>
+<div id="toast" role="status"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getAuth, onAuthStateChanged, signInWithEmailAndPassword,
+  createUserWithEmailAndPassword, signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  getFirestore, doc, getDoc, setDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/*
+  الخطوة الأولى:
+  أنشئ مشروع Firebase ثم فعّل Authentication (Email/Password)
+  وأنشئ قاعدة Firestore.
+  استبدل القيم أدناه بإعدادات تطبيق الويب من مشروعك.
+*/
+const firebaseConfig = {
+  apiKey: "PASTE_YOUR_FIREBASE_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.firebasestorage.app",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_FIREBASE_APP_ID"
+};
+
+const $ = id => document.getElementById(id);
+const blankData = () => ({
+  products: [], sales: [], purchases: [], expenses: [],
+  settings: {shopName:"HAMDAD SHOP", ownerName:"", currency:"DZD"}
+});
+let data = blankData();
+let user = null;
+let currency = "DZD";
+let saveTimer;
+let saving = false;
+let pendingSave = false;
+let app, auth, db;
+
+function toast(message) {
+  const el = $("toast");
+  el.textContent = message;
+  el.classList.add("show");
+  clearTimeout(toast.timer);
+  toast.timer = setTimeout(() => el.classList.remove("show"), 3200);
+}
+function message(text) { $("authMsg").textContent = text; }
+function money(value) {
+  const amount = Number(value) || 0;
+  return new Intl.NumberFormat("ar", {
+    minimumFractionDigits: 2, maximumFractionDigits: 2
+  }).format(amount) + " " + currency;
+}
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+}
+function safe(value) {
+  return String(value ?? "").replace(/[&<>"']/g, ch => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+  })[ch]);
+}
+function dateNow() { return new Date().toISOString(); }
+function dateLabel(date) {
+  const d = new Date(date);
+  return Number.isNaN(d.getTime()) ? "-" : d.toLocaleString("ar");
+}
+function ref() {
+  return doc(db, "hamdadShopUsers", user.uid, "private", "storeData");
+}
+function showPage(name) {
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  $("page-" + name).classList.add("active");
+  document.querySelectorAll("[data-page]").forEach(b => b.classList.toggle("active", b.dataset.page === name));
+  const titles = {
+    dashboard:"لوحة التحكم", products:"المنتجات والمخزون",
+    sales:"المبيعات والفواتير", purchases:"المشتريات",
+    expenses:"المصاريف", reports:"التقارير", settings:"الإعدادات"
+  };
+  $("pageTitle").textContent = titles[name] || "HAMDAD SHOP";
+  renderAll();
+}
+window.showPage = showPage;
+
+async function loadData() {
+  $("syncStatus").textContent = "جارٍ تحميل البيانات...";
+  try {
+    const snap = await getDoc(ref());
+    data = blankData();
+    if (snap.exists()) {
+      const remote = snap.data();
+      data = {
+        ...data, ...remote,
+        products: Array.isArray(remote.products) ? remote.products : [],
+        sales: Array.isArray(remote.sales) ? remote.sales : [],
+        purchases: Array.isArray(remote.purchases) ? remote.purchases : [],
+        expenses: Array.isArray(remote.expenses) ? remote.expenses : [],
+        settings: {...data.settings, ...(remote.settings || {})}
+      };
+    }
+    currency = data.settings.currency || "DZD";
+    renderAll();
+    loadSettings();
+    $("syncStatus").textContent = "متصل بالسحابة";
+  } catch (e) {
+    console.error(e);
+    $("syncStatus").textContent = "خطأ في الاتصال";
+    toast("تعذر تحميل البيانات. تحقق من قواعد Firestore.");
+  }
+}
+async function saveNow() {
+  if (!user) return;
+  if (saving) { pendingSave = true; return; }
+  saving = true;
+  try {
+    await setDoc(ref(), data);
+    $("syncStatus").textContent = "تم الحفظ السحابي";
+  } catch (e) {
+    console.error(e);
+    $("syncStatus").textContent = "فشل الحفظ";
+    toast("فشل الحفظ السحابي. تحقق من الإنترنت وقواعد Firestore.");
+  } finally {
+    saving = false;
+    if (pendingSave) {
+      pendingSave = false;
+      saveNow();
+    }
+  }
+}
+function scheduleSave() {
+  if (!user) return;
+  $("syncStatus").textContent = "توجد تغييرات...";
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveNow, 500);
+}
+function renderAll() {
+  renderProducts();
+  renderSales();
+  renderPurchases();
+  renderExpenses();
+  renderDashboard();
+  renderReports();
+  renderProductOptions();
+}
+function renderProducts() {
+  const q = ($("productSearch")?.value || "").trim().toLowerCase();
+  const items = data.products.filter(p =>
+    (p.name + " " + (p.sku || "") + " " + (p.category || "")).toLowerCase().includes(q)
+  );
+  $("productsTable").innerHTML = items.length ? `<table><thead><tr>
+    <th>المنتج</th><th>الرمز</th><th>التصنيف</th><th>الكمية</th>
+    <th>الشراء</th><th>البيع</th><th>الحالة</th><th class="no-print">إجراء</th>
+    </tr></thead><tbody>${items.map(p => `<tr>
+    <td>${safe(p.name)}</td><td>${safe(p.sku || "-")}</td><td>${safe(p.category || "-")}</td>
+    <td>${p.qty}</td><td>${money(p.cost)}</td><td>${money(p.price)}</td>
+    <td>${p.qty <= p.min ? '<span class="badge" style="color:#c0392b">مخزون منخفض</span>' : '<span class="badge">متوفر</span>'}</td>
+    <td class="no-print"><button class="secondary" data-edit="${safe(p.id)}">تعديل</button> <button class="danger" data-delete="${safe(p.id)}">حذف</button></td>
+    </tr>`).join("")}</tbody></table>` : '<div class="empty">لا توجد منتجات. أضف أول منتج من النموذج أعلاه.</div>';
+  $("productsTable").querySelectorAll("[data-edit]").forEach(b => b.addEventListener("click", () => editProduct(b.dataset.edit)));
+  $("productsTable").querySelectorAll("[data-delete]").forEach(b => b.addEventListener("click", () => deleteProduct(b.dataset.delete)));
+}
+function renderProductOptions() {
+  ["saleProduct", "purchaseProduct"].forEach(id => {
+    const el = $(id), old = el.value;
+    el.innerHTML = '<option value="">اختر المنتج</option>' + data.products.map(p =>
+      `<option value="${safe(p.id)}">${safe(p.name)} — المتوفر: ${p.qty}</option>`
+    ).join("");
+    if (data.products.some(p => p.id === old)) el.value = old;
+  });
+}
+function renderSales() {
+  const list = [...data.sales].reverse();
+  $("salesTable").innerHTML = list.length ? `<table><thead><tr>
+    <th>رقم الفاتورة</th><th>التاريخ</th><th>المنتج</th><th>العميل</th>
+    <th>الكمية</th><th>الإجمالي</th><th class="no-print">طباعة</th>
+    </tr></thead><tbody>${list.map(s => `<tr>
+    <td>${safe(s.id)}</td><td>${safe(dateLabel(s.date))}</td><td>${safe(s.productName)}</td>
+    <td>${safe(s.customer || "-")}</td><td>${s.qty}</td><td>${money(s.total)}</td>
+    <td class="no-print"><button data-invoice="${safe(s.id)}">طباعة الفاتورة</button></td>
+    </tr>`).join("")}</tbody></table>` : '<div class="empty">لا توجد مبيعات مسجلة.</div>';
+  $("salesTable").querySelectorAll("[data-invoice]").forEach(b => b.addEventListener("click", () => printInvoice(b.dataset.invoice)));
+  $("recentSales").innerHTML = list.length ? `<table><thead><tr><th>المنتج</th><th>التاريخ</th><th>الإجمالي</th></tr></thead><tbody>${list.slice(0,5).map(s => `<tr><td>${safe(s.productName)}</td><td>${safe(dateLabel(s.date))}</td><td>${money(s.total)}</td></tr>`).join("")}</tbody></table>` : '<div class="empty">ستظهر المبيعات هنا.</div>';
+}
+function renderPurchases() {
+  const list = [...data.purchases].reverse();
+  $("purchasesTable").innerHTML = list.length ? `<table><thead><tr><th>التاريخ</th><th>المنتج</th><th>المورّد</th><th>الكمية</th><th>التكلفة</th></tr></thead><tbody>${list.map(p => `<tr><td>${safe(dateLabel(p.date))}</td><td>${safe(p.productName)}</td><td>${safe(p.supplier || "-")}</td><td>${p.qty}</td><td>${money(p.total)}</td></tr>`).join("")}</tbody></table>` : '<div class="empty">لا توجد مشتريات مسجلة.</div>';
+}
+function renderExpenses() {
+  const list = [...data.expenses].reverse();
+  $("expensesTable").innerHTML = list.length ? `<table><thead><tr><th>التاريخ</th><th>المصروف</th><th>ملاحظات</th><th>المبلغ</th><th class="no-print">إجراء</th></tr></thead><tbody>${list.map(e => `<tr><td>${safe(dateLabel(e.date))}</td><td>${safe(e.title)}</td><td>${safe(e.note || "-")}</td><td>${money(e.amount)}</td><td class="no-print"><button class="danger" data-expense="${safe(e.id)}">حذف</button></td></tr>`).join("")}</tbody></table>` : '<div class="empty">لا توجد مصاريف مسجلة.</div>';
+  $("expensesTable").querySelectorAll("[data-expense]").forEach(b => b.addEventListener("click", () => {
+    if (!confirm("هل تريد حذف هذا المصروف؟")) return;
+    data.expenses = data.expenses.filter(e => e.id !== b.dataset.expense);
+    renderAll(); scheduleSave();
+  }));
+}
+function renderDashboard() {
+  $("statProducts").textContent = data.products.length;
+  $("statStock").textContent = money(data.products.reduce((n,p) => n + p.qty * p.cost, 0));
+  const today = new Date().toDateString();
+  $("statSales").textContent = money(data.sales.filter(s => new Date(s.date).toDateString() === today).reduce((n,s) => n + s.total, 0));
+  $("statLow").textContent = data.products.filter(p => p.qty <= p.min).length;
+}
+function renderReports() {
+  const revenue = data.sales.reduce((n,s) => n + s.total, 0);
+  const cost = data.sales.reduce((n,s) => n + s.costTotal, 0);
+  const expenses = data.expenses.reduce((n,e) => n + e.amount, 0);
+  $("reportRevenue").textContent = money(revenue);
+  $("reportCost").textContent = money(cost);
+  $("reportGross").textContent = money(revenue - cost);
+  $("reportExpenses").textContent = money(expenses);
+  $("reportNet").textContent = "النتيجة بعد المصاريف: " + money(revenue - cost - expenses);
+}
+function editProduct(id) {
+  const p = data.products.find(x => x.id === id);
+  if (!p) return;
+  $("productId").value = p.id;
+  $("pName").value = p.name;
+  $("pSku").value = p.sku || "";
+  $("pCategory").value = p.category || "";
+  $("pCost").value = p.cost;
+  $("pPrice").value = p.price;
+  $("pQty").value = p.qty;
+  $("pMin").value = p.min;
+  $("productFormTitle").textContent = "تعديل المنتج";
+  showPage("products");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function resetProductForm() {
+  $("productForm").reset();
+  $("productId").value = "";
+  $("pCost").value = "0";
+  $("pPrice").value = "0";
+  $("pQty").value = "0";
+  $("pMin").value = "5";
+  $("productFormTitle").textContent = "إضافة منتج جديد";
+}
+function deleteProduct(id) {
+  const p = data.products.find(x => x.id === id);
+  if (!p) return;
+  if (data.sales.some(s => s.productId === id) || data.purchases.some(s => s.productId === id)) {
+    toast("لا يمكن حذف منتج له حركات مسجلة. عدّل بياناته بدلًا من حذفه.");
+    return;
+  }
+  if (!confirm("حذف المنتج " + p.name + "؟")) return;
+  data.products = data.products.filter(x => x.id !== id);
+  renderAll(); scheduleSave(); toast("تم حذف المنتج.");
+}
+$("productForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const id = $("productId").value;
+  const name = $("pName").value.trim();
+  const sku = $("pSku").value.trim();
+  const cost = Number($("pCost").value);
+  const price = Number($("pPrice").value);
+  const qty = Number($("pQty").value);
+  const min = Number($("pMin").value);
+  if (!name || [cost,price,qty,min].some(v => !Number.isFinite(v) || v < 0) || !Number.isInteger(qty) || !Number.isInteger(min)) {
+    toast("تحقق من اسم المنتج والأسعار والكميات."); return;
+  }
+  if (sku && data.products.some(p => p.sku === sku && p.id !== id)) {
+    toast("رمز المنتج مستخدم بالفعل."); return;
+  }
+  const p = {id:id || uid(),name,sku,category:$("pCategory").value.trim(),cost,price,qty,min};
+  if (id) data.products = data.products.map(x => x.id === id ? p : x);
+  else data.products.push(p);
+  resetProductForm(); renderAll(); scheduleSave(); toast("تم حفظ المنتج.");
+});
+$("cancelProduct").addEventListener("click", resetProductForm);
+$("productSearch").addEventListener("input", renderProducts);
+$("saleForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const p = data.products.find(x => x.id === $("saleProduct").value);
+  const qty = Number($("saleQty").value);
+  if (!p || !Number.isInteger(qty) || qty < 1) { toast("اختر منتجًا وكمية صحيحة."); return; }
+  if (qty > p.qty) { toast("الكمية المطلوبة أكبر من المخزون المتوفر."); return; }
+  const sale = {
+    id:"INV-" + Date.now().toString().slice(-8),
+    date:dateNow(),productId:p.id,productName:p.name,
+    customer:$("saleCustomer").value.trim(),qty,
+    unitPrice:p.price,costTotal:p.cost * qty,total:p.price * qty
+  };
+  p.qty -= qty;
+  data.sales.push(sale);
+  $("saleForm").reset(); $("saleQty").value = 1;
+  renderAll(); scheduleSave(); toast("تم تسجيل البيع وخصم الكمية من المخزون.");
+});
+$("purchaseForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const p = data.products.find(x => x.id === $("purchaseProduct").value);
+  const qty = Number($("purchaseQty").value), cost = Number($("purchaseCost").value);
+  if (!p || !Number.isInteger(qty) || qty < 1 || !Number.isFinite(cost) || cost < 0) {
+    toast("تحقق من المنتج والكمية وسعر الشراء."); return;
+  }
+  const oldQty = p.qty;
+  p.cost = oldQty + qty > 0 ? ((oldQty * p.cost) + (qty * cost)) / (oldQty + qty) : cost;
+  p.qty += qty;
+  data.purchases.push({id:uid(),date:dateNow(),productId:p.id,productName:p.name,qty,cost,supplier:$("purchaseSupplier").value.trim(),total:qty*cost});
+  $("purchaseForm").reset(); $("purchaseQty").value = 1;
+  renderAll(); scheduleSave(); toast("تم تسجيل الشراء وتحديث المخزون.");
+});
+$("expenseForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const title = $("expenseTitle").value.trim(), amount = Number($("expenseAmount").value);
+  if (!title || !Number.isFinite(amount) || amount <= 0) { toast("أدخل وصفًا ومبلغًا صحيحًا."); return; }
+  data.expenses.push({id:uid(),date:dateNow(),title,amount,note:$("expenseNote").value.trim()});
+  $("expenseForm").reset(); renderAll(); scheduleSave(); toast("تم حفظ المصروف.");
+});
+function loadSettings() {
+  $("shopName").value = data.settings.shopName || "HAMDAD SHOP";
+  $("ownerName").value = data.settings.ownerName || "";
+  $("currency").value = data.settings.currency || "DZD";
+}
+$("settingsForm").addEventListener("submit", e => {
+  e.preventDefault();
+  data.settings = {shopName:$("shopName").value.trim() || "HAMDAD SHOP",ownerName:$("ownerName").value.trim(),currency:$("currency").value};
+  currency = data.settings.currency;
+  renderAll(); scheduleSave(); toast("تم حفظ الإعدادات.");
+});
+function printInvoice(id) {
+  const s = data.sales.find(x => x.id === id);
+  if (!s) return;
+  const w = window.open("", "_blank", "width=700,height=700");
+  if (!w) { toast("اسمح بفتح النوافذ المنبثقة لطباعة الفاتورة."); return; }
+  w.document.write(`<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>فاتورة ${safe(s.id)}</title><style>body{font-family:Tahoma,Arial;padding:35px;color:#12304a}h1{color:#12304a}table{width:100%;border-collapse:collapse;margin-top:25px}td,th{padding:12px;border:1px solid #ddd;text-align:right}.total{font-size:22px;margin-top:25px}</style></head><body><h1>HAMDAD SHOP</h1><h2>فاتورة بيع</h2><p>رقم الفاتورة: ${safe(s.id)}</p><p>التاريخ: ${safe(dateLabel(s.date))}</p><p>العميل: ${safe(s.customer || "-")}</p><table><tr><th>المنتج</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th></tr><tr><td>${safe(s.productName)}</td><td>${s.qty}</td><td>${money(s.unitPrice)}</td><td>${money(s.total)}</td></tr></table><p class="total">الإجمالي: ${money(s.total)}</p><p>شكرًا لتعاملكم معنا.</p><script>window.onload=()=>window.print();<\/script></body></html>`);
+  w.document.close();
+}
+window.printInvoice = printInvoice;
+function exportCSV() {
+  const rows = [["المنتج","الرمز","التصنيف","الكمية","سعر الشراء","سعر البيع"]];
+  data.products.forEach(p => rows.push([p.name,p.sku,p.category,p.qty,p.cost,p.price]));
+  const csv = "\uFEFF" + rows.map(r => r.map(v => '"' + String(v ?? "").replace(/"/g,'""') + '"').join(",")).join("\r\n");
+  downloadFile(csv, "hamdad-shop-products.csv", "text/csv;charset=utf-8");
+}
+function exportBackup() {
+  downloadFile(JSON.stringify(data,null,2),"hamdad-shop-backup.json","application/json");
+}
+function downloadFile(content, name, type) {
+  const blob = new Blob([content],{type});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(url),1000);
+}
+$("importFile").addEventListener("change", e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async () => {
+    try {
+      const imported = JSON.parse(reader.result);
+      if (!imported || !Array.isArray(imported.products) || !Array.isArray(imported.sales) || !Array.isArray(imported.purchases) || !Array.isArray(imported.expenses)) throw new Error("invalid backup");
+      if (!confirm("ستُستبدل بيانات الحساب الحالية بالنسخة الاحتياطية. هل تريد المتابعة؟")) return;
+      data = {...blankData(),...imported,settings:{...blankData().settings,...(imported.settings||{})}};
+      currency = data.settings.currency || "DZD";
+      renderAll(); loadSettings(); await saveNow(); toast("تم استيراد النسخة الاحتياطية.");
+    } catch (err) { console.error(err); toast("الملف غير صالح أو ليس نسخة احتياطية من HAMDAD SHOP."); }
+    finally { e.target.value = ""; }
+  };
+  reader.readAsText(file);
+});
+$("nav").addEventListener("click", e => {
+  const btn = e.target.closest("[data-page]");
+  if (btn) showPage(btn.dataset.page);
+});
+$("authForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  if (!auth) { message("أكمل إعداد Firebase في الكود أولًا."); return; }
+  try {
+    message("جارٍ تسجيل الدخول...");
+    await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);
+  } catch (err) {
+    console.error(err);
+    message(authError(err.code));
+  }
+});
+$("registerBtn").addEventListener("click", async () => {
+  if (!auth) { message("أكمل إعداد Firebase في الكود أولًا."); return; }
+  const email = $("email").value.trim(), password = $("password").value;
+  if (!email || password.length < 6) { message("أدخل بريدًا صحيحًا وكلمة مرور من 6 أحرف على الأقل."); return; }
+  try {
+    message("جارٍ إنشاء الحساب...");
+    await createUserWithEmailAndPassword(auth,email,password);
+  } catch (err) {
+    console.error(err);
+    message(authError(err.code));
+  }
+});
+function authError(code) {
+  const messages = {
+    "auth/invalid-email":"البريد الإلكتروني غير صحيح.",
+    "auth/invalid-credential":"البريد الإلكتروني أو كلمة المرور غير صحيحة.",
+    "auth/email-already-in-use":"هذا البريد مسجل بالفعل.",
+    "auth/weak-password":"كلمة المرور ضعيفة.",
+    "auth/too-many-requests":"محاولات كثيرة. حاول لاحقًا.",
+    "auth/api-key-not-valid":"مفتاح Firebase غير صحيح. راجع إعدادات المشروع.",
+    "auth/operation-not-allowed":"فعّل تسجيل الدخول بالبريد وكلمة المرور في Firebase Authentication."
+  };
+  return messages[code] || ("تعذر إكمال العملية: " + (code || "خطأ غير معروف"));
+}
+async function logout() {
+  if (!auth) return;
+  if (confirm("هل تريد تسجيل الخروج؟")) await signOut(auth);
+}
+$("logoutBtn").addEventListener("click",logout);
+$("settingsLogout").addEventListener("click",logout);
+
+try {
+  if (firebaseConfig.apiKey.startsWith("PASTE_") || firebaseConfig.projectId === "YOUR_PROJECT_ID") {
+    $("syncStatus").textContent = "Firebase غير مهيأ";
+    message("قبل تسجيل الدخول، ضع بيانات مشروع Firebase في الكود.");
+  } else {
+    app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    db = getFirestore(app);
+    onAuthStateChanged(auth, async currentUser => {
+      user = currentUser;
+      $("auth").classList.toggle("hidden",!!user);
+      $("app").classList.toggle("hidden",!user);
+      if (user) await loadData();
+      else {
+        data = blankData();
+        $("syncStatus").textContent = "تم تسجيل الخروج";
+      }
+    });
+  }
+} catch (err) {
+  console.error(err);
+  message("خطأ في إعداد Firebase. راجع بيانات المشروع.");
+}
+</script>
+</body>
+</html>
